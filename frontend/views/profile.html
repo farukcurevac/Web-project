@@ -1,0 +1,63 @@
+<section class="profile-section">
+  <div class="container">
+    <!-- Profile Header -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="profile-header">
+          <div class="profile-info">
+            <div class="profile-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="profile-details">
+              <h1 class="profile-name">My Profile</h1>
+              <p class="profile-subtitle">Manage your car listings</p>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="stat-item">
+              <span class="stat-number" id="totalCars">0</span>
+              <span class="stat-label">Cars Listed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Cars Section -->
+    <div class="row">
+      <div class="col-12">
+        <div class="section-header">
+          <h2 class="section-title" style="color: rgb(36, 35, 35)">
+            My Car Listings
+          </h2>
+          <a href="#add" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Add New Car
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cars Grid -->
+    <div class="row" id="myCarsGrid">
+      <!-- Cars will be dynamically loaded here -->
+    </div>
+
+    <!-- Empty State -->
+    <div class="row" id="emptyState" style="display: none">
+      <div class="col-12">
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-car"></i>
+          </div>
+          <h3>No cars listed yet</h3>
+          <p>Start by adding your first car to the marketplace</p>
+          <a href="#add" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus-circle"></i>
+            Add Your First Car
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

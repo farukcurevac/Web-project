@@ -1,0 +1,88 @@
+{
+  "featuredCars": [
+    {
+      "id": "featured-1",
+      "title": "BMW 3 Series",
+      "specs": "2020 • 45,000 km • Automatic",
+      "price": "€25,000",
+      "engine": "2.0L Turbo",
+      "fuel": "Petrol",
+      "color": "Black",
+      "location": "Sarajevo",
+      "seller": "Marko Petrović",
+      "phone": "+387 61 123 456",
+      "description": "This BMW 3 Series is in excellent condition with full service history. The car has been well maintained and comes with all original documentation. Features include leather seats, navigation system, automatic climate control, and premium sound system. Perfect for both city driving and long trips.",
+      "image": "images/bmw.jpg"
+    },
+    {
+      "id": "featured-2",
+      "title": "Audi A4",
+      "specs": "2019 • 60,000 km • Manual",
+      "price": "€22,000",
+      "engine": "1.8L TFSI",
+      "fuel": "Petrol",
+      "color": "White",
+      "location": "Banja Luka",
+      "seller": "Ana Nikolić",
+      "phone": "+387 65 987 654",
+      "description": "Beautiful Audi A4 in pristine white color. This vehicle has been garage-kept and meticulously maintained. It features Quattro all-wheel drive, heated seats, panoramic sunroof, and advanced safety features. The manual transmission provides an engaging driving experience.",
+      "image": "images/audi.jpg"
+    },
+    {
+      "id": "featured-3",
+      "title": "Mercedes C-Class",
+      "specs": "2021 • 30,000 km • Automatic",
+      "price": "€28,000",
+      "engine": "2.0L Diesel",
+      "fuel": "Diesel",
+      "color": "Silver",
+      "location": "Mostar",
+      "seller": "Stefan Jovanović",
+      "phone": "+387 63 456 789",
+      "description": "Luxury Mercedes C-Class with low mileage and premium features. This vehicle offers exceptional comfort and performance with advanced driver assistance systems, premium interior materials, and cutting-edge technology. Ideal for executive use or long-distance travel.",
+      "image": "images/merc.jpg"
+    },
+    {
+      "id": "featured-4",
+      "title": "Volkswagen Golf",
+      "specs": "2018 • 80,000 km • Manual",
+      "price": "€15,000",
+      "engine": "1.6L TDI",
+      "fuel": "Diesel",
+      "color": "Blue",
+      "location": "Tuzla",
+      "seller": "Mirza Hadžić",
+      "phone": "+387 62 321 987",
+      "description": "Reliable and economical Volkswagen Golf with excellent fuel efficiency. This car has been consistently serviced and is perfect for daily commuting. Features include air conditioning, electric windows, and a modern infotainment system. Great value for money.",
+      "image": "images/golf.webp"
+    },
+    {
+      "id": "featured-5",
+      "title": "Toyota Camry",
+      "specs": "2020 • 35,000 km • Automatic",
+      "price": "€23,000",
+      "engine": "2.5L Hybrid",
+      "fuel": "Hybrid",
+      "color": "Red",
+      "location": "Zenica",
+      "seller": "Amira Softić",
+      "phone": "+387 64 789 123",
+      "description": "Eco-friendly Toyota Camry Hybrid with outstanding fuel economy and reliability. This vehicle combines performance with environmental consciousness, featuring advanced hybrid technology, spacious interior, and comprehensive safety features. Perfect for environmentally conscious drivers.",
+      "image": "images/toyota.jpg"
+    },
+    {
+      "id": "featured-6",
+      "title": "Honda Civic",
+      "specs": "2019 • 55,000 km • Manual",
+      "price": "€18,000",
+      "engine": "1.5L Turbo",
+      "fuel": "Petrol",
+      "color": "Gray",
+      "location": "Bijeljina",
+      "seller": "Nikola Mitrović",
+      "phone": "+387 66 654 321",
+      "description": "Sporty Honda Civic with turbocharged engine delivering excellent performance and fuel efficiency. This well-maintained vehicle offers a perfect balance of reliability, style, and driving enjoyment. Features modern technology and safety systems suitable for both city and highway driving.",
+      "image": "images/honda.jpg"
+    }
+  ]
+}

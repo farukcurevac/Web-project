@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auto Scout</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Page-specific styles so views look correct when injected -->
+    <link rel="stylesheet" href="assets/css/register.css" />
+    <link rel="stylesheet" href="assets/css/add.css" />
+    <link rel="stylesheet" href="assets/css/profile.css" />
+    <link rel="stylesheet" href="assets/css/index.css" />
+    <link rel="stylesheet" href="assets/css/spapp.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="logo">
+          <a href="#home">FarukCars.ba</a>
+        </div>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#login">Login</a></li>
+          <li><a href="#register">Register</a></li>
+          <li><a href="#add">Add</a></li>
+          <li><a href="#profile">My Profile</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Car Details Modal -->
+    <div
+      class="modal fade"
+      id="carModal"
+      tabindex="-1"
+      aria-labelledby="carModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="carModalLabel">Car Details</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <img
+                  id="modalCarImage"
+                  src=""
+                  alt="Car Image"
+                  class="img-fluid rounded"
+                />
+              </div>
+              <div class="col-md-6">
+                <h3 id="modalCarTitle" class="car-title-modal"></h3>
+                <p id="modalCarSpecs" class="car-specs-modal"></p>
+                <p id="modalCarPrice" class="car-price-modal"></p>
+
+                <h5>Technical Specifications:</h5>
+                <div id="modalCarDetails" class="car-details-modal"></div>
+
+                <h5>Description:</h5>
+                <p id="modalCarDescription" class="car-description"></p>
+
+                <div class="contact-info mt-4">
+                  <h5>Contact Information:</h5>
+                  <p>
+                    <strong>Seller:</strong> <span id="modalSellerName"></span>
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> <span id="modalSellerPhone"></span>
+                  </p>
+                  <p>
+                    <strong>Location:</strong>
+                    <span id="modalCarLocation"></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <!-- Shown only when coming from Profile page -->
+            <button
+              type="button"
+              id="deleteCarBtn"
+              class="btn btn-danger"
+              style="display: none"
+            >
+              Delete Listing
+            </button>
+            <button type="button" class="btn btn-primary">
+              Contact Seller
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main id="spapp" role="main">
+      <section id="home" data-load="home.html">
+        <h1>Home</h1>
+      </section>
+      <section id="login" data-load="login.html">
+        <h1>Login</h1>
+      </section>
+      <section id="register" data-load="register.html">
+        <h1>Register</h1>
+      </section>
+      <section id="add" data-load="add.html">
+        <h1>Add</h1>
+      </section>
+      <section id="profile" data-load="profile.html">
+        <h1>Profile</h1>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <p>&copy; 2025 FarukCars.ba. All rights reserved.</p>
+        <p>Your trusted marketplace for buying and selling cars.</p>
+      </div>
+    </footer>
+
+    <!-- jQuery (CDN) MUST be first -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- SPAPP after jQuery -->
+    <script src="assets/js/jquery.spapp.min.js"></script>
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Feature scripts (safe to include globally; they guard init by route) -->
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/add.js"></script>
+    <script src="assets/js/profile.js"></script>
+    <script>
+      // Configure SPAPP routes and initialize page-specific logic when views are shown
+      var app = $.spapp({
+        defaultView: "#home",
+        templateDir: "./views/",
+      });
+
+      // Home view: initialize search/featured cars once the view is ready
+      app.route({
+        view: "home",
+        onReady: function () {
+          if (window.initHomePage) window.initHomePage();
+        },
+      });
+
+      // Add car view
+      app.route({
+        view: "add",
+        onReady: function () {
+          if (window.initAddPage) window.initAddPage();
+        },
+      });
+
+      // Profile view
+      app.route({
+        view: "profile",
+        onReady: function () {
+          if (window.initProfilePage) window.initProfilePage();
+        },
+      });
+
+      // Simple routes for login/register (no special JS needed now)
+      app.route({ view: "login" });
+      app.route({ view: "register" });
+
+      app.run();
+    </script>
+  </body>
+</html>
