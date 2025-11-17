@@ -1,48 +1,91 @@
 <?php
-require_once __DIR__ . '/../services/ReviewService.php';
-require_once __DIR__ . '/../Response.php';
+/**
+ * Review routes (singular)
+ */
 
-$service = new ReviewService();
+// List reviews
+/**
+ * @OA\Get(
+ *     path="/review",
+ *     summary="List reviews",
+ *     @OA\Response(response=200, description="A list of reviews", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Review")))
+ * )
+ */
+Flight::route('GET /review', function() {
+    Flight::json(Flight::reviewService()->getAll());
+});
 
-function route_reviews_list() {
-    global $service;
-    $data = $service->list();
-    Response::json($data, 200);
-}
+// Get review by id
+/**
+ * @OA\Get(
+ *     path="/review/{id}",
+ *     summary="Get review by ID",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(response=200, description="Review details", @OA\JsonContent(ref="#/components/schemas/Review")),
+ *     @OA\Response(response=404, description="Not found")
+ * )
+ */
+Flight::route('GET /review/@id', function($id) {
+    Flight::json(Flight::reviewService()->getById($id));
+});
 
-function route_reviews_get($id) {
-    global $service;
-    $r = $service->get($id);
-    if (!$r) Response::error('Not found', 404);
-    Response::json($r, 200);
-}
+// Create review
+/**
+ * @OA\Post(
+ *     path="/review",
+ *     summary="Create a new review",
+ *     @OA\RequestBody(@OA\JsonContent(ref="#/components/schemas/ReviewCreate")),
+ *     @OA\Response(response=201, description="Review created", @OA\JsonContent(ref="#/components/schemas/Review"))
+ * )
+ */
+Flight::route('POST /review', function() {
+    $data = Flight::getRequestData();
+    $created = Flight::reviewService()->create($data);
+    Flight::response()->status(201);
+    Flight::json($created);
+});
 
-function route_reviews_create() {
-    global $service;
-    $input = json_decode(file_get_contents('php://input'), true);
-    $service->create($input);
-    Response::json(['message' => 'Created'], 201);
-}
+// Replace review
+/**
+ * @OA\Put(
+ *     path="/review/{id}",
+ *     summary="Replace a review",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\RequestBody(@OA\JsonContent(ref="#/components/schemas/ReviewCreate")),
+ *     @OA\Response(response=200, description="Review updated", @OA\JsonContent(ref="#/components/schemas/Review"))
+ * )
+ */
+Flight::route('PUT /review/@id', function($id) {
+    $data = Flight::getRequestData();
+    Flight::json(Flight::reviewService()->update($id, $data));
+});
 
-function route_reviews_update($id) {
-    global $service;
-    $input = json_decode(file_get_contents('php://input'), true);
-    $service->update($id, $input);
-    Response::json(['message' => 'Updated'], 200);
-}
+// Partial update review
+/**
+ * @OA\Patch(
+ *     path="/review/{id}",
+ *     summary="Partially update a review",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\RequestBody(@OA\JsonContent(ref="#/components/schemas/ReviewPatch")),
+ *     @OA\Response(response=200, description="Review updated", @OA\JsonContent(ref="#/components/schemas/Review"))
+ * )
+ */
+Flight::route('PATCH /review/@id', function($id) {
+    $data = Flight::getRequestData();
+    Flight::json(Flight::reviewService()->update($id, $data));
+});
 
-function route_reviews_delete($id) {
-    global $service;
-    $service->delete($id);
-    Response::json(['message' => 'Deleted'], 200);
-}
-
-if (class_exists('Flight')) {
-    Flight::route('GET /api/reviews', 'route_reviews_list');
-    Flight::route('GET /api/reviews/@id', 'route_reviews_get');
-    Flight::route('POST /api/reviews', 'route_reviews_create');
-    Flight::route('PUT /api/reviews/@id', 'route_reviews_update');
-    Flight::route('DELETE /api/reviews/@id', 'route_reviews_delete');
-}
+// Delete review
+/**
+ * @OA\Delete(
+ *     path="/review/{id}",
+ *     summary="Delete a review",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(response=204, description="Deleted")
+ * )
+ */
+Flight::route('DELETE /review/@id', function($id) {
+    Flight::json(Flight::reviewService()->delete($id));
+});
 
 ?>

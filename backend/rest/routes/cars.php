@@ -1,48 +1,87 @@
 <?php
-require_once __DIR__ . '/../services/CarService.php';
-require_once __DIR__ . '/../Response.php';
+/**
+ * Car routes — singular base path compatible with provided OA-style file
+ *
+ * GET /car            -> list or filter by brand using ?brand=...
+ * GET /car/{id}       -> get by id
+ * POST /car           -> create
+ * PUT /car/{id}       -> replace
+ * PATCH /car/{id}     -> partial update
+ * DELETE /car/{id}    -> delete
+ */
 
-$service = new CarService();
+// (List cars route removed; use POST /car to create and GET /car/{id} to fetch individual cars)
 
-function route_cars_list() {
-    global $service;
-    $data = $service->list();
-    Response::json($data, 200);
-}
+// Get car by id
+/**
+ * @OA\Get(
+ *     path="/car/{id}",
+ *     summary="Get car by ID",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Car details",
+ *         @OA\JsonContent(ref="#/components/schemas/Car")
+ *     ),
+ *     @OA\Response(response=404, description="Not found")
+ * )
+ */
+Flight::route('GET /car/@id', function($id) {
+    Flight::json(Flight::carService()->getById($id));
+});
 
-function route_cars_get($id) {
-    global $service;
-    $car = $service->get($id);
-    if (!$car) Response::error('Not found', 404);
-    Response::json($car, 200);
-}
+// Create car
+/**
+ * @OA\Post(
+ *     path="/car",
+ *     summary="Create a new car",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(ref="#/components/schemas/CarCreate")
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Car created",
+ *         @OA\JsonContent(ref="#/components/schemas/Car")
+ *     )
+ * )
+ */
+Flight::route('POST /car', function() {
+    $data = Flight::getRequestData();
+    $created = Flight::carService()->create($data);
+    // Return created resource with 201 status when DAO returns the row
+    Flight::response()->status(201);
+    Flight::json($created);
+});
 
-function route_cars_create() {
-    global $service;
-    $input = json_decode(file_get_contents('php://input'), true);
-    $service->create($input);
-    Response::json(['message' => 'Created'], 201);
-}
+// Replace car
+/**
+ * @OA\Put(
+ *     path="/car/{id}",
+ *     summary="Replace a car",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\RequestBody(@OA\JsonContent(ref="#/components/schemas/CarCreate")),
+ *     @OA\Response(response=200, description="Car updated", @OA\JsonContent(ref="#/components/schemas/Car"))
+ * )
+ */
+Flight::route('PUT /car/@id', function($id) {
+    $data = Flight::getRequestData();
+    Flight::json(Flight::carService()->update($id, $data));
+});
 
-function route_cars_update($id) {
-    global $service;
-    $input = json_decode(file_get_contents('php://input'), true);
-    $service->update($id, $input);
-    Response::json(['message' => 'Updated'], 200);
-}
+// (PATCH /car/{id} removed)
 
-function route_cars_delete($id) {
-    global $service;
-    $service->delete($id);
-    Response::json(['message' => 'Deleted'], 200);
-}
-
-if (class_exists('Flight')) {
-    Flight::route('GET /api/cars', 'route_cars_list');
-    Flight::route('GET /api/cars/@id', 'route_cars_get');
-    Flight::route('POST /api/cars', 'route_cars_create');
-    Flight::route('PUT /api/cars/@id', 'route_cars_update');
-    Flight::route('DELETE /api/cars/@id', 'route_cars_delete');
-}
+// Delete car
+/**
+ * @OA\Delete(
+ *     path="/car/{id}",
+ *     summary="Delete a car",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(response=204, description="Deleted")
+ * )
+ */
+Flight::route('DELETE /car/@id', function($id) {
+    Flight::json(Flight::carService()->delete($id));
+});
 
 ?>

@@ -1,64 +1,91 @@
 <?php
-require_once __DIR__ . '/../services/CategoryService.php';
-require_once __DIR__ . '/../Response.php';
-
-$service = new CategoryService();
+/**
+ * Category routes (singular)
+ */
 
 // List categories
-if (!function_exists('route_categories_list')) {
-    function route_categories_list() {
-        global $service;
-        $data = $service->list();
-        Response::json($data, 200);
-    }
-}
+/**
+ * @OA\Get(
+ *     path="/category",
+ *     summary="List categories",
+ *     @OA\Response(response=200, description="A list of categories", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Category")))
+ * )
+ */
+Flight::route('GET /category', function() {
+    Flight::json(Flight::categoryService()->getAll());
+});
 
 // Get category by id
-if (!function_exists('route_categories_get')) {
-    function route_categories_get($id) {
-        global $service;
-        $cat = $service->get($id);
-        if (!$cat) Response::error('Not found', 404);
-        Response::json($cat, 200);
-    }
-}
+/**
+ * @OA\Get(
+ *     path="/category/{id}",
+ *     summary="Get category by ID",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(response=200, description="Category details", @OA\JsonContent(ref="#/components/schemas/Category")),
+ *     @OA\Response(response=404, description="Not found")
+ * )
+ */
+Flight::route('GET /category/@id', function($id) {
+    Flight::json(Flight::categoryService()->getById($id));
+});
 
 // Create category
-if (!function_exists('route_categories_create')) {
-    function route_categories_create() {
-        global $service;
-        $input = json_decode(file_get_contents('php://input'), true);
-        $service->create($input);
-        Response::json(['message' => 'Created'], 201);
-    }
-}
+/**
+ * @OA\Post(
+ *     path="/category",
+ *     summary="Create a new category",
+ *     @OA\RequestBody(@OA\JsonContent(ref="#/components/schemas/CategoryCreate")),
+ *     @OA\Response(response=201, description="Category created", @OA\JsonContent(ref="#/components/schemas/Category"))
+ * )
+ */
+Flight::route('POST /category', function() {
+    $data = Flight::getRequestData();
+    $created = Flight::categoryService()->create($data);
+    Flight::response()->status(201);
+    Flight::json($created);
+});
 
-// Update category
-if (!function_exists('route_categories_update')) {
-    function route_categories_update($id) {
-        global $service;
-        $input = json_decode(file_get_contents('php://input'), true);
-        $service->update($id, $input);
-        Response::json(['message' => 'Updated'], 200);
-    }
-}
+// Replace category
+/**
+ * @OA\Put(
+ *     path="/category/{id}",
+ *     summary="Replace a category",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\RequestBody(@OA\JsonContent(ref="#/components/schemas/CategoryCreate")),
+ *     @OA\Response(response=200, description="Category updated", @OA\JsonContent(ref="#/components/schemas/Category"))
+ * )
+ */
+Flight::route('PUT /category/@id', function($id) {
+    $data = Flight::getRequestData();
+    Flight::json(Flight::categoryService()->update($id, $data));
+});
+
+// Partial update category
+/**
+ * @OA\Patch(
+ *     path="/category/{id}",
+ *     summary="Partially update a category",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\RequestBody(@OA\JsonContent(ref="#/components/schemas/CategoryPatch")),
+ *     @OA\Response(response=200, description="Category updated", @OA\JsonContent(ref="#/components/schemas/Category"))
+ * )
+ */
+Flight::route('PATCH /category/@id', function($id) {
+    $data = Flight::getRequestData();
+    Flight::json(Flight::categoryService()->update($id, $data));
+});
 
 // Delete category
-if (!function_exists('route_categories_delete')) {
-    function route_categories_delete($id) {
-        global $service;
-        $service->delete($id);
-        Response::json(['message' => 'Deleted'], 200);
-    }
-}
-
-// If Flight is available, register the routes; otherwise leave functions for manual wiring
-if (class_exists('Flight')) {
-    Flight::route('GET /api/categories', 'route_categories_list');
-    Flight::route('GET /api/categories/@id', 'route_categories_get');
-    Flight::route('POST /api/categories', 'route_categories_create');
-    Flight::route('PUT /api/categories/@id', 'route_categories_update');
-    Flight::route('DELETE /api/categories/@id', 'route_categories_delete');
-}
+/**
+ * @OA\Delete(
+ *     path="/category/{id}",
+ *     summary="Delete a category",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(response=204, description="Deleted")
+ * )
+ */
+Flight::route('DELETE /category/@id', function($id) {
+    Flight::json(Flight::categoryService()->delete($id));
+});
 
 ?>

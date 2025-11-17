@@ -10,3 +10,7 @@ node_modules/
 # IDE/editor files
 .vscode/
 *.log
+
+# Backend vendor and tmp (ignore installed dependencies and temporary files)
+/backend/vendor/
+/backend/tmp/

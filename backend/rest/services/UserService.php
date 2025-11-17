@@ -3,49 +3,53 @@ require_once __DIR__ . '/../dao/UserDao.php';
 require_once __DIR__ . '/BaseService.php';
 
 class UserService extends BaseService {
-    public function __construct() {
-        parent::__construct(new UserDao());
-    }
+	public function __construct($dao = null) {
+		parent::__construct($dao ?: new UserDao());
+	}
 
-    public function list() {
-        return parent::list();
-    }
+	// Implement validation in create so it works with the minimal BaseService
+	public function create($data) {
+		if (!is_array($data)) {
+			throw new InvalidArgumentException('User data must be an array');
+		}
+		if (empty($data['email'])) {
+			throw new InvalidArgumentException('Email is required');
+		}
+		if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+			throw new InvalidArgumentException('Invalid email format');
+		}
+		// If password is not provided, generate a random one and store its hash.
+		if (empty($data['password'])) {
+			// generate a random 12-char password (not returned in API)
+			$random = bin2hex(random_bytes(6));
+			$data['password'] = $random;
+		}
+		$existing = $this->dao->getByEmail($data['email']);
+		if ($existing) {
+			throw new InvalidArgumentException('Email already registered');
+		}
+		$data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+		return $this->dao->insert($data);
+	}
 
-    public function get($id) {
-        return parent::getById($id);
-    }
-
-    public function create(array $data) {
-        // No validators: perform minimal uniqueness check and insert
-        $existing = isset($data['email']) ? $this->dao->getByEmail($data['email']) : null;
-        if ($existing) {
-            throw new Exception('Email already in use', 400);
-        }
-
-        $payload = [
-            'name' => isset($data['name']) ? $data['name'] : null,
-            'email' => isset($data['email']) ? $data['email'] : null,
-            'password' => isset($data['password']) ? $data['password'] : null,
-            'phone' => isset($data['phone']) ? $data['phone'] : null,
-            'role' => isset($data['role']) ? $data['role'] : 'buyer'
-        ];
-
-        return parent::create($payload);
-    }
-
-    public function update($id, array $data) {
-        if (isset($data['email'])) {
-            $existing = $this->dao->getByEmail($data['email']);
-            if ($existing && $existing['user_id'] != $id) {
-                throw new Exception('Email already in use', 400);
-            }
-        }
-        return parent::update($id, $data);
-    }
-
-    public function delete($id) {
-        return parent::delete($id);
-    }
+	public function update($id, $data) {
+		if (!is_array($data)) {
+			throw new InvalidArgumentException('User data must be an array');
+		}
+		if (isset($data['email'])) {
+			if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+				throw new InvalidArgumentException('Invalid email format');
+			}
+			$existing = $this->dao->getByEmail($data['email']);
+			if ($existing && isset($existing['user_id']) && $existing['user_id'] != $id) {
+				throw new InvalidArgumentException('Email already used by another account');
+			}
+		}
+		if (isset($data['password'])) {
+			$data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+		}
+		return $this->dao->update($id, $data);
+	}
 }
 
 ?>
