@@ -19,7 +19,14 @@ if (!$loaded) {
     error_log('Warning: Composer autoload not found in expected locations.');
 }
 
+require_once __DIR__ . '/middleware/AuthMiddleware.php';
 require_once __DIR__ . '/bootstrap.php';
+
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 // Allow simple health check
 if (php_sapi_name() === 'cli-server') {
@@ -27,6 +34,29 @@ if (php_sapi_name() === 'cli-server') {
 }
 
 if (class_exists('Flight')) {
+    // Register the middleware
+    Flight::register('auth_middleware', 'AuthMiddleware');
+
+    // Apply token verification globally
+    // Allow login/register routes to skip verification
+    Flight::route('/*', function() {
+        if(
+            strpos(Flight::request()->url, '/auth/login') === 0 ||
+            strpos(Flight::request()->url, '/auth/register') === 0 ||
+            strpos(Flight::request()->url, '/docs') === 0
+        ) {
+            return TRUE;
+        } else {
+            try {
+                $token = Flight::request()->getHeader("Authentication");
+                if(Flight::auth_middleware()->verifyToken($token))
+                    return TRUE;
+            } catch (\Exception $e) {
+                Flight::halt(401, $e->getMessage());
+            }
+        }
+    });
+
     // Optionally set JSON response header globally
     Flight::map('json', function($data) {
         header('Content-Type: application/json');

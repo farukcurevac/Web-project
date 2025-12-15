@@ -23,12 +23,14 @@ set_exception_handler(function($e) {
     require_once __DIR__ . '/services/CategoryService.php';
     require_once __DIR__ . '/services/OrderService.php';
     require_once __DIR__ . '/services/ReviewService.php';
+    require_once __DIR__ . '/services/AuthService.php';
     if (class_exists('Flight')) {
             if (class_exists('CarService')) Flight::register('carService', 'CarService');
             if (class_exists('UserService')) Flight::register('userService', 'UserService');
             if (class_exists('CategoryService')) Flight::register('categoryService', 'CategoryService');
             if (class_exists('OrderService')) Flight::register('orderService', 'OrderService');
             if (class_exists('ReviewService')) Flight::register('reviewService', 'ReviewService');
+            if (class_exists('AuthService')) Flight::register('authService', 'AuthService');
         }
 
         // Provide a safe helper to read JSON/request data in both real Flight and the fallback shim.

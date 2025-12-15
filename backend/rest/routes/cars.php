@@ -10,7 +10,22 @@
  * DELETE /car/{id}    -> delete
  */
 
-// (List cars route removed; use POST /car to create and GET /car/{id} to fetch individual cars)
+// List all cars
+/**
+ * @OA\Get(
+ *     path="/car",
+ *     summary="List all cars",
+ *     @OA\Response(
+ *         response=200,
+ *         description="A list of cars",
+ *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Car"))
+ *     )
+ * )
+ */
+Flight::route('GET /car', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
+    Flight::json(Flight::carService()->getAll());
+});
 
 // Get car by id
 /**
@@ -27,6 +42,7 @@
  * )
  */
 Flight::route('GET /car/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     Flight::json(Flight::carService()->getById($id));
 });
 
@@ -47,6 +63,7 @@ Flight::route('GET /car/@id', function($id) {
  * )
  */
 Flight::route('POST /car', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     $data = Flight::getRequestData();
     $created = Flight::carService()->create($data);
     // Return created resource with 201 status when DAO returns the row
@@ -65,6 +82,7 @@ Flight::route('POST /car', function() {
  * )
  */
 Flight::route('PUT /car/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     $data = Flight::getRequestData();
     Flight::json(Flight::carService()->update($id, $data));
 });
@@ -81,6 +99,7 @@ Flight::route('PUT /car/@id', function($id) {
  * )
  */
 Flight::route('DELETE /car/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     Flight::json(Flight::carService()->delete($id));
 });
 
