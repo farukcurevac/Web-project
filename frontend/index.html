@@ -138,6 +138,22 @@
 
     <!-- jQuery (CDN) MUST be first -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- jQuery Validation Plugin -->
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    <!-- jQuery BlockUI Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <!-- Toastr Notifications -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- DataTables -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"
+    />
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <!-- SPAPP after jQuery -->
     <script src="assets/js/jquery.spapp.min.js"></script>
     <!-- Bootstrap Bundle -->
@@ -146,6 +162,14 @@
     <script src="assets/js/script.js"></script>
     <script src="assets/js/add.js"></script>
     <script src="assets/js/profile.js"></script>
+    <!-- Utils and services for authenticated API access and cars page -->
+    <script src="utils/constants.js"></script>
+    <script src="utils/rest-client.js"></script>
+    <script src="utils/utils.js"></script>
+    <script src="services/user-service.js"></script>
+    <script src="services/register-service.js"></script>
+    <script src="services/dashboard-service.js"></script>
+    <script src="services/admin-service.js"></script>
     <script>
       // Configure SPAPP routes and initialize page-specific logic when views are shown
       var app = $.spapp({
@@ -177,9 +201,50 @@
         },
       });
 
-      // Simple routes for login/register (no special JS needed now)
-      app.route({ view: "login" });
-      app.route({ view: "register" });
+      // Simple routes for login/register
+      app.route({
+        view: "login",
+        onReady: function () {
+          if (window.UserService && typeof UserService.init === "function") {
+            UserService.init();
+          }
+        },
+      });
+
+      app.route({
+        view: "register",
+        onReady: function () {
+          if (
+            window.RegisterService &&
+            typeof RegisterService.init === "function"
+          ) {
+            RegisterService.init();
+          }
+        },
+      });
+
+      // Dashboard view: user profile and listings
+      app.route({
+        view: "dashboard",
+        onReady: function () {
+          if (
+            window.DashboardService &&
+            typeof DashboardService.init === "function"
+          ) {
+            DashboardService.init();
+          }
+        },
+      });
+
+      // Admin panel view
+      app.route({
+        view: "admin",
+        onReady: function () {
+          if (window.AdminService && typeof AdminService.init === "function") {
+            AdminService.init();
+          }
+        },
+      });
 
       app.run();
     </script>

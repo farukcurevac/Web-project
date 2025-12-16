@@ -1,0 +1,198 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Cars</h1>
+    <button
+      type="button"
+      class="btn btn-primary"
+      onclick="CarService.openAddModal()"
+      id="addCarBtn"
+    >
+      Add Car
+    </button>
+  </div>
+
+  <table
+    id="cars-table"
+    class="table table-striped table-bordered w-100"
+  ></table>
+
+  <!-- Add Car Modal -->
+  <div class="modal" id="addCarModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="addCarForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Car</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              onclick="CarService.closeModal()"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Title/Model</label>
+              <input type="text" class="form-control" name="title" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Brand</label>
+              <input type="text" class="form-control" name="brand" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Price</label>
+              <input type="number" class="form-control" name="price" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <input
+                type="number"
+                class="form-control"
+                name="category_id"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="description"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              onclick="CarService.closeModal()"
+            >
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Car Modal -->
+  <div class="modal" id="editCarModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="editCarForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Car</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              onclick="CarService.closeModal()"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit_car_id" name="id" required />
+            <div class="mb-3">
+              <label class="form-label">Title/Model</label>
+              <input
+                type="text"
+                class="form-control"
+                id="edit_title"
+                name="title"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Brand</label>
+              <input
+                type="text"
+                class="form-control"
+                id="edit_brand"
+                name="brand"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Price</label>
+              <input
+                type="number"
+                class="form-control"
+                id="edit_price"
+                name="price"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <input
+                type="number"
+                class="form-control"
+                id="edit_category_id"
+                name="category_id"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                id="edit_description"
+                name="description"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              onclick="CarService.closeModal()"
+            >
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Car Modal -->
+  <div class="modal" id="deleteCarModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Car</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            onclick="CarService.closeModal()"
+          ></button>
+        </div>
+        <input id="delete_car_id" name="id" hidden />
+        <div class="modal-body" id="delete-car-body">
+          Are you sure you want to delete this car?
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            onclick="CarService.closeModal()"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            onclick="CarService.deleteCar()"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  CarService.init();
+</script>

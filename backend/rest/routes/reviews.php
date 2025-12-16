@@ -12,6 +12,7 @@
  * )
  */
 Flight::route('GET /review', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     Flight::json(Flight::reviewService()->getAll());
 });
 
@@ -26,6 +27,7 @@ Flight::route('GET /review', function() {
  * )
  */
 Flight::route('GET /review/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     Flight::json(Flight::reviewService()->getById($id));
 });
 
@@ -39,6 +41,7 @@ Flight::route('GET /review/@id', function($id) {
  * )
  */
 Flight::route('POST /review', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     $data = Flight::getRequestData();
     $created = Flight::reviewService()->create($data);
     Flight::response()->status(201);
@@ -56,6 +59,7 @@ Flight::route('POST /review', function() {
  * )
  */
 Flight::route('PUT /review/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     $data = Flight::getRequestData();
     Flight::json(Flight::reviewService()->update($id, $data));
 });
@@ -71,6 +75,7 @@ Flight::route('PUT /review/@id', function($id) {
  * )
  */
 Flight::route('PATCH /review/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     $data = Flight::getRequestData();
     Flight::json(Flight::reviewService()->update($id, $data));
 });
@@ -85,6 +90,7 @@ Flight::route('PATCH /review/@id', function($id) {
  * )
  */
 Flight::route('DELETE /review/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     Flight::json(Flight::reviewService()->delete($id));
 });
 
