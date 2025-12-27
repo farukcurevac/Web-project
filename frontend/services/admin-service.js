@@ -2,7 +2,8 @@ var AdminService = {
   init: function () {
     // Check if user is admin
     if (!Utils.isAdmin()) {
-      window.location.href = "#home";
+      toastr.error("Access denied. Admin privileges required.");
+      window.location.href = "index.html#home";
       return;
     }
 
@@ -19,6 +20,9 @@ var AdminService = {
     document
       .getElementById("cars-tab")
       .addEventListener("click", AdminService.loadAllCars);
+    document
+      .getElementById("reviews-tab")
+      .addEventListener("click", AdminService.loadAllReviews);
   },
 
   loadStats: function () {
@@ -81,7 +85,6 @@ var AdminService = {
     const columns = [
       { title: "ID", data: "car_id" },
       { title: "Title", data: "title" },
-      { title: "Brand", data: "brand" },
       {
         title: "Price",
         data: function (row) {
@@ -106,7 +109,6 @@ var AdminService = {
           { title: "Name", data: "name" },
           { title: "Email", data: "email" },
           { title: "Phone", data: "phone" },
-          { title: "City", data: "city" },
           { title: "Role", data: "role" },
           {
             title: "Actions",
@@ -135,46 +137,76 @@ var AdminService = {
   },
 
   loadAllOrders: function () {
-    RestClient.get(
-      "order",
-      function (response) {
-        const orders = response.data || response || [];
-        const columns = [
-          { title: "Order ID", data: "order_id" },
-          { title: "Buyer", data: "buyer_name" },
-          { title: "Car", data: "car_title" },
-          {
-            title: "Price",
-            data: function (row) {
-              return Utils.formatPrice(row.price);
+    if (typeof OrderService !== "undefined") {
+      OrderService.getAllOrders(
+        function (orders) {
+          const columns = [
+            { title: "Order ID", data: "order_id" },
+            { title: "Buyer ID", data: "buyer_id" },
+            { title: "Car ID", data: "car_id" },
+            {
+              title: "Status",
+              data: function (row) {
+                const statusClass =
+                  row.status === "completed"
+                    ? "success"
+                    : row.status === "pending"
+                    ? "warning"
+                    : row.status === "cancelled"
+                    ? "danger"
+                    : "info";
+                return `<span class="badge bg-${statusClass}">${row.status}</span>`;
+              },
             },
-          },
-          { title: "Status", data: "status" },
-          { title: "Date", data: "created_at" },
-          {
-            title: "Actions",
-            data: function (row) {
-              return (
-                '<button class="btn btn-sm btn-info me-2" onclick="AdminService.viewOrder(' +
-                row.order_id +
-                ')">View</button>' +
-                '<button class="btn btn-sm btn-danger" onclick="AdminService.deleteOrder(' +
-                row.order_id +
-                ')">Delete</button>'
-              );
+            {
+              title: "Order Date",
+              data: function (row) {
+                return row.order_date || "N/A";
+              },
             },
-          },
-        ];
+            {
+              title: "Actions",
+              data: function (row) {
+                return (
+                  '<button class="btn btn-sm btn-success me-2" onclick="AdminService.updateOrderStatus(' +
+                  row.order_id +
+                  ", 'completed')\">Complete</button>" +
+                  '<button class="btn btn-sm btn-danger" onclick="AdminService.deleteOrder(' +
+                  row.order_id +
+                  ')">Delete</button>'
+                );
+              },
+            },
+          ];
 
-        if ($.fn.dataTable.isDataTable("#adminOrdersTable")) {
-          $("#adminOrdersTable").DataTable().destroy();
+          if ($.fn.dataTable.isDataTable("#adminOrdersTable")) {
+            $("#adminOrdersTable").DataTable().destroy();
+          }
+          Utils.datatable("adminOrdersTable", columns, orders, 10);
+        },
+        function (error) {
+          toastr.error("Failed to load orders");
         }
-        Utils.datatable("adminOrdersTable", columns, orders, 10);
-      },
-      function (error) {
-        toastr.error("Failed to load orders");
-      }
-    );
+      );
+    }
+  },
+
+  updateOrderStatus: function (orderId, status) {
+    if (typeof OrderService !== "undefined") {
+      OrderService.updateOrderStatus(orderId, status, function () {
+        // Reload orders table
+        AdminService.loadAllOrders();
+      });
+    }
+  },
+
+  deleteOrder: function (orderId) {
+    if (typeof OrderService !== "undefined") {
+      OrderService.deleteOrder(orderId, function () {
+        // Reload orders table
+        AdminService.loadAllOrders();
+      });
+    }
   },
 
   loadAllCars: function () {
@@ -185,7 +217,6 @@ var AdminService = {
         const columns = [
           { title: "ID", data: "car_id" },
           { title: "Title", data: "title" },
-          { title: "Brand", data: "brand" },
           {
             title: "Price",
             data: function (row) {
@@ -197,19 +228,6 @@ var AdminService = {
             title: "Status",
             data: function (row) {
               return Utils.formatCarStatus(row.status);
-            },
-          },
-          {
-            title: "Actions",
-            data: function (row) {
-              return (
-                '<button class="btn btn-sm btn-warning me-2" onclick="CarService.openEditModal(' +
-                encodeURIComponent(JSON.stringify(row)) +
-                ')">Edit</button>' +
-                '<button class="btn btn-sm btn-danger" onclick="CarService.openDeleteModal(' +
-                row.car_id +
-                ')">Delete</button>'
-              );
             },
           },
         ];
@@ -254,6 +272,103 @@ var AdminService = {
           $.unblockUI();
           toastr.success("Order deleted");
           AdminService.loadAllOrders();
+        },
+        function (error) {
+          $.unblockUI();
+          toastr.error("Delete failed");
+        }
+      );
+    }
+  },
+
+  loadAllReviews: function () {
+    if (typeof ReviewService === "undefined") {
+      toastr.error("ReviewService not available");
+      return;
+    }
+
+    ReviewService.getAllReviews(
+      function (reviews) {
+        const columns = [
+          { title: "Review ID", data: "review_id" },
+          { title: "Car ID", data: "car_id" },
+          { title: "User ID", data: "user_id" },
+          {
+            title: "Rating",
+            data: function (row) {
+              const stars = "⭐".repeat(row.rating || 0);
+              return (
+                '<span title="' +
+                (row.rating || 0) +
+                ' stars">' +
+                stars +
+                " (" +
+                (row.rating || 0) +
+                "/5)</span>"
+              );
+            },
+          },
+          {
+            title: "Comment",
+            data: function (row) {
+              const comment = row.comment || "No comment";
+              const truncated =
+                comment.length > 50
+                  ? comment.substring(0, 50) + "..."
+                  : comment;
+              return (
+                '<div title="' +
+                comment.replace(/"/g, "&quot;") +
+                '">' +
+                truncated +
+                "</div>"
+              );
+            },
+          },
+          {
+            title: "Date",
+            data: function (row) {
+              return row.review_date || "N/A";
+            },
+          },
+          {
+            title: "Actions",
+            data: function (row) {
+              return (
+                '<button class="btn btn-sm btn-danger" onclick="AdminService.deleteReview(' +
+                row.review_id +
+                ')">Delete</button>'
+              );
+            },
+          },
+        ];
+
+        if ($.fn.dataTable.isDataTable("#adminReviewsTable")) {
+          $("#adminReviewsTable").DataTable().destroy();
+        }
+        Utils.datatable("adminReviewsTable", columns, reviews, 10);
+      },
+      function (error) {
+        toastr.error("Failed to load reviews");
+      }
+    );
+  },
+
+  deleteReview: function (reviewId) {
+    if (confirm("Are you sure you want to delete this review?")) {
+      $.blockUI({ message: "Deleting..." });
+      if (typeof ReviewService === "undefined") {
+        $.unblockUI();
+        toastr.error("ReviewService not available");
+        return;
+      }
+
+      ReviewService.deleteReview(
+        reviewId,
+        function () {
+          $.unblockUI();
+          toastr.success("Review deleted");
+          AdminService.loadAllReviews();
         },
         function (error) {
           $.unblockUI();

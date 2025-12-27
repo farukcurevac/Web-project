@@ -12,7 +12,7 @@
  * )
  */
 Flight::route('GET /order', function() {
-    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     Flight::json(Flight::orderService()->getAll());
 });
 

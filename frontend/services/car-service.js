@@ -39,7 +39,6 @@ var CarService = {
         return row.title || row.model || "";
       },
     },
-    { title: "Brand", data: "brand" },
     {
       title: "Price",
       data: function (row) {
@@ -78,23 +77,31 @@ var CarService = {
     $("#addCarForm")[0].reset();
   },
 
-  addCar: function (car) {
+  addCar: function (car, successCallback, errorCallback) {
     $.blockUI({ message: "<h3>Processing...</h3>" });
     RestClient.post(
       "car",
-      JSON.stringify(car),
+      car,
       function (response) {
-        toastr.success("Car added successfully");
         $.unblockUI();
-        CarService.getAllCars();
-        CarService.closeModal();
+        if (successCallback) {
+          successCallback(response);
+        } else {
+          toastr.success("Car added successfully");
+          CarService.getAllCars();
+          CarService.closeModal();
+        }
       },
-      function (response) {
-        CarService.closeModal();
-        const message =
-          response.responseJSON?.error?.message || "Add car failed";
-        toastr.error(message);
+      function (error) {
         $.unblockUI();
+        if (errorCallback) {
+          errorCallback(error);
+        } else {
+          CarService.closeModal();
+          const message =
+            error.responseJSON?.error?.message || "Add car failed";
+          toastr.error(message);
+        }
       }
     );
   },
@@ -113,7 +120,6 @@ var CarService = {
               },
               title: "Title",
             },
-            { data: "brand", title: "Brand" },
             {
               data: function (row) {
                 return row.price ? Utils.formatPrice(row.price) : "";

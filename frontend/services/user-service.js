@@ -2,8 +2,23 @@ var UserService = {
   init: function () {
     var token = localStorage.getItem("user_token");
     if (token && token !== undefined) {
-      window.location.replace("index.html");
+      // User already logged in, redirect to dashboard
+      const user = Utils.getCurrentUser();
+      if (user && user.role === Constants.ADMIN_ROLE) {
+        window.location.replace("index.html#admin");
+      } else {
+        window.location.replace("index.html#dashboard");
+      }
+      return;
     }
+
+    // Pre-fill email if user just registered
+    const registrationEmail = localStorage.getItem("registration_email");
+    if (registrationEmail) {
+      $("#email").val(registrationEmail);
+      localStorage.removeItem("registration_email");
+    }
+
     $("#login-form").validate({
       submitHandler: function (form) {
         var entity = Object.fromEntries(new FormData(form).entries());
@@ -24,13 +39,20 @@ var UserService = {
         localStorage.setItem("user_token", result.data.token);
         localStorage.setItem("user_data", JSON.stringify(result.data));
         toastr.success("Login successful!");
-        window.location.replace("index.html");
+        // Redirect based on role
+        const user = Utils.parseJwt(result.data.token)?.user;
+        if (user && user.role === Constants.ADMIN_ROLE) {
+          window.location.replace("index.html#admin");
+        } else {
+          window.location.replace("index.html#dashboard");
+        }
       },
       error: function (XMLHttpRequest, textStatus, errorThrown) {
         const errorMsg =
-          XMLHttpRequest?.responseJSON?.error?.message ||
+          XMLHttpRequest?.responseJSON?.error ||
+          XMLHttpRequest?.responseJSON?.message ||
           XMLHttpRequest?.responseText ||
-          "Login failed";
+          "Login failed. Please check your credentials.";
         toastr.error(errorMsg);
       },
     });
@@ -38,7 +60,7 @@ var UserService = {
 
   logout: function () {
     localStorage.clear();
-    window.location.replace("login.html");
+    window.location.replace("index.html#login");
   },
 
   generateMenuItems: function () {

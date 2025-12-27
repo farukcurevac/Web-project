@@ -2,30 +2,43 @@
 window.initAddPage = function () {
   const addCarForm = document.getElementById("addCarForm");
   const formMessage = document.getElementById("formMessage");
-  const imageInput = document.getElementById("image");
+  const imageInput = document.getElementById("image_url");
+
+  // Check if user is logged in
+  if (!Utils.isLoggedIn()) {
+    if (formMessage) {
+      formMessage.className = "alert alert-warning mt-3";
+      formMessage.innerHTML =
+        '<strong>Please login first</strong> to sell a car. <a href="#login">Go to login</a>';
+      formMessage.style.display = "block";
+    }
+    return;
+  }
 
   // Ensure elements exist and avoid double init
   if (!addCarForm || addCarForm.dataset.initialized === "true") return;
   addCarForm.dataset.initialized = "true";
 
   // Image preview functionality
-  imageInput.addEventListener("input", function () {
-    const imageUrl = this.value;
-    const existingPreview = document.querySelector(".image-preview");
+  if (imageInput) {
+    imageInput.addEventListener("input", function () {
+      const imageUrl = this.value;
+      const existingPreview = document.querySelector(".image-preview");
 
-    if (existingPreview) {
-      existingPreview.remove();
-    }
+      if (existingPreview) {
+        existingPreview.remove();
+      }
 
-    if (imageUrl && isValidImageUrl(imageUrl)) {
-      const previewDiv = document.createElement("div");
-      previewDiv.className = "image-preview";
-      previewDiv.innerHTML = `
-        <img src="${imageUrl}" alt="Car preview" onerror="this.style.display='none'" />
-      `;
-      imageInput.parentNode.appendChild(previewDiv);
-    }
-  });
+      if (imageUrl && isValidImageUrl(imageUrl)) {
+        const previewDiv = document.createElement("div");
+        previewDiv.className = "image-preview";
+        previewDiv.innerHTML = `
+          <img src="${imageUrl}" alt="Car preview" onerror="this.style.display='none'" />
+        `;
+        imageInput.parentNode.appendChild(previewDiv);
+      }
+    });
+  }
 
   // Form submission
   addCarForm.addEventListener("submit", function (e) {
@@ -40,52 +53,83 @@ window.initAddPage = function () {
     const submitBtn = addCarForm.querySelector('button[type="submit"]');
     const originalBtnContent = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="loading-spinner"></span> Adding Car...';
+    submitBtn.innerHTML =
+      '<span class="loading-spinner"></span> Posting Car...';
 
-    // Collect form data
+    // Collect form data - only send fields that backend expects
     const formData = new FormData(addCarForm);
+    const user = Utils.getCurrentUser();
+
+    console.log("=== SELLING CAR ===");
+    console.log("Current user:", user);
+    console.log("User ID field:", user ? user.user_id : "NO USER");
+
     const carData = {
-      id: Date.now(), // Simple ID generation using timestamp
-      title: formData.get("carTitle"),
-      specs: `${formData.get("year")} • ${Number(
-        formData.get("mileage")
-      ).toLocaleString()} km • ${formData.get("transmission")}`,
-      price: formatPrice(formData.get("price")),
-      engine: formData.get("engine"),
-      fuel: formData.get("fuel"),
-      color: formData.get("color"),
-      location: formData.get("location"),
-      seller: formData.get("seller"),
-      phone: formData.get("phone"),
-      description: formData.get("description"),
-      image: formData.get("image"),
+      title: formData.get("title"),
+      price: parseFloat(formData.get("price")),
+      category_id: parseInt(formData.get("category_id")),
+      seller_id: user ? user.user_id : null,
+      description: formData.get("description") || "",
+      image_url: formData.get("image_url") || "",
+      status: "AVAILABLE",
     };
 
-    // Simulate API call (since we can't actually modify JSON file from client-side)
-    setTimeout(() => {
-      // Add to localStorage for demonstration
-      addCarToLocalStorage(carData);
+    console.log("Posting car data to /car:", carData);
 
-      // Show success message
-      showMessage(
-        "Your car has been successfully added! It will appear in search results.",
-        "success"
-      );
+    // Use CarService to post car
+    CarService.addCar(
+      carData,
+      function (response) {
+        console.log("Car posted successfully:", response);
 
-      // Reset form
-      addCarForm.reset();
-      const imagePreview = document.querySelector(".image-preview");
-      if (imagePreview) {
-        imagePreview.remove();
+        // Show success message
+        showMessage(
+          "Your car has been successfully posted! It will appear in the Buy Cars listing immediately.",
+          "success"
+        );
+
+        // Reset form
+        addCarForm.reset();
+        const imagePreview = document.querySelector(".image-preview");
+        if (imagePreview) {
+          imagePreview.remove();
+        }
+
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnContent;
+
+        // Clear all validation classes
+        clearValidationClasses();
+
+        // Refresh Buy Cars page if it's loaded
+        if (
+          window.BuyCarsService &&
+          typeof BuyCarsService.loadAllCars === "function"
+        ) {
+          setTimeout(() => {
+            BuyCarsService.loadAllCars();
+          }, 1000);
+        }
+      },
+      function (error) {
+        console.error("Failed to post car:", error);
+        console.error("Error status:", error.status);
+        console.error("Error response text:", error.responseText);
+        console.error("Error JSON:", error.responseJSON);
+
+        const errorMsg =
+          error.responseJSON?.message ||
+          error.responseJSON?.error ||
+          error.statusText ||
+          "Failed to post car. Check browser console for details.";
+        showMessage("Error: " + errorMsg, "danger");
+
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnContent;
       }
-
-      // Reset button
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalBtnContent;
-
-      // Clear all validation classes
-      clearValidationClasses();
-    }, 2000);
+    );
   });
 
   // Form validation
@@ -104,35 +148,21 @@ window.initAddPage = function () {
         isValid = false;
       } else {
         // Additional specific validations
-        if (field.type === "email" && !isValidEmail(value)) {
-          markFieldInvalid(field, "Please enter a valid email address.");
-          isValid = false;
-        } else if (field.type === "url" && !isValidImageUrl(value)) {
-          markFieldInvalid(field, "Please enter a valid image URL.");
-          isValid = false;
-        } else if (field.name === "year") {
-          const year = parseInt(value);
-          const currentYear = new Date().getFullYear();
-          if (year < 1980 || year > currentYear) {
-            markFieldInvalid(
-              field,
-              `Year must be between 1980 and ${currentYear}.`
-            );
+        if (field.name === "price") {
+          const price = parseFloat(value);
+          if (isNaN(price) || price < 0) {
+            markFieldInvalid(field, "Please enter a valid price.");
             isValid = false;
           } else {
             markFieldValid(field);
           }
-        } else if (field.name === "mileage") {
-          const mileage = parseInt(value);
-          if (mileage < 0 || mileage > 1000000) {
-            markFieldInvalid(field, "Please enter a valid mileage.");
+        } else if (field.name === "category_id") {
+          if (value === "") {
+            markFieldInvalid(field, "Please select a category.");
             isValid = false;
           } else {
             markFieldValid(field);
           }
-        } else if (field.name === "phone" && !isValidPhone(value)) {
-          // Phone validation removed - allow any format
-          markFieldValid(field);
         } else {
           markFieldValid(field);
         }
@@ -143,11 +173,6 @@ window.initAddPage = function () {
   }
 
   // Validation helper functions
-  function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
   function isValidImageUrl(url) {
     try {
       new URL(url);
@@ -155,22 +180,6 @@ window.initAddPage = function () {
     } catch {
       return false;
     }
-  }
-
-  function isValidPhone(phone) {
-    // Simple phone validation for Bosnia and Herzegovina format
-    const phoneRegex = /^\+387\s?\d{2}\s?\d{3}\s?\d{3,4}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ""));
-  }
-
-  function formatPrice(price) {
-    // Ensure price starts with € if not already formatted
-    if (price && !price.includes("€")) {
-      // Remove any existing currency symbols and clean up
-      const cleanPrice = price.replace(/[^\d,]/g, "");
-      return `€${cleanPrice}`;
-    }
-    return price;
   }
 
   function markFieldInvalid(field, message) {
@@ -266,30 +275,25 @@ window.initAddPage = function () {
 
     if (field.required && !value) {
       markFieldInvalid(field, "This field is required.");
-    } else if (field.name === "year" && value) {
-      const year = parseInt(value);
-      const currentYear = new Date().getFullYear();
-      if (year < 1980 || year > currentYear) {
+    } else if (field.name === "price" && value) {
+      const price = parseFloat(value);
+      if (isNaN(price) || price < 0) {
+        markFieldInvalid(field, "Please enter a valid price.");
+      } else {
+        markFieldValid(field);
+      }
+    } else if (field.name === "category_id" && value) {
+      if (value === "") {
+        markFieldInvalid(field, "Please select a category.");
+      } else {
+        markFieldValid(field);
+      }
+    } else if (field.name === "image_url" && value) {
+      if (!isValidImageUrl(value)) {
         markFieldInvalid(
           field,
-          `Year must be between 1980 and ${currentYear}.`
+          "Please enter a valid image URL (jpg, png, webp, gif)."
         );
-      } else {
-        markFieldValid(field);
-      }
-    } else if (field.name === "mileage" && value) {
-      const mileage = parseInt(value);
-      if (mileage < 0 || mileage > 1000000) {
-        markFieldInvalid(field, "Please enter a valid mileage.");
-      } else {
-        markFieldValid(field);
-      }
-    } else if (field.name === "phone" && value) {
-      // Phone validation removed - allow any format
-      markFieldValid(field);
-    } else if (field.type === "url" && value) {
-      if (!isValidImageUrl(value)) {
-        markFieldInvalid(field, "Please enter a valid image URL.");
       } else {
         markFieldValid(field);
       }
@@ -305,8 +309,3 @@ document.addEventListener("DOMContentLoaded", function () {
     window.initAddPage();
   }
 });
-
-// Function to get cars from localStorage (for use in search)
-function getCarsFromLocalStorage() {
-  return JSON.parse(localStorage.getItem("additionalCars") || "[]");
-}

@@ -58,6 +58,7 @@ window.initHomePage = function () {
       <div class="col-md-4 mb-4">
         <div
           class="card car-card"
+          data-id="${car.id}"
           data-title="${car.title}"
           data-specs="${car.specs}"
           data-price="${car.price}"
@@ -104,6 +105,7 @@ window.initHomePage = function () {
   // Show car modal with data
   function showCarModal(card) {
     const carData = {
+      id: card.dataset.id,
       title: card.dataset.title,
       specs: card.dataset.specs,
       price: card.dataset.price,
@@ -138,6 +140,34 @@ window.initHomePage = function () {
     document.getElementById("modalSellerPhone").textContent = carData.phone;
     document.getElementById("modalCarLocation").textContent = carData.location;
 
+    // Show/hide purchase button based on login status
+    const purchaseBtn = document.getElementById("purchaseCarBtn");
+    const deleteBtn = document.getElementById("deleteCarBtn");
+    console.log("Car ID:", carData.id, "Is Logged In:", Utils.isLoggedIn());
+
+    // Hide delete button (shown only from profile page)
+    deleteBtn.style.display = "none";
+
+    // Show purchase button only if user is logged in and car has an ID
+    if (Utils.isLoggedIn() && carData.id) {
+      purchaseBtn.style.display = "block";
+      purchaseBtn.onclick = function () {
+        if (typeof OrderService !== "undefined") {
+          OrderService.createOrder(carData.id, function () {
+            carModal.hide();
+            toastr.success(
+              "Car purchased successfully! Redirecting to your dashboard..."
+            );
+            setTimeout(function () {
+              window.location.hash = "#dashboard";
+            }, 1500);
+          });
+        }
+      };
+    } else {
+      purchaseBtn.style.display = "none";
+    }
+
     // Show modal
     carModal.show();
   }
@@ -147,6 +177,7 @@ window.initHomePage = function () {
     return `
       <div class="col-md-4 mb-4 search-result-card">
         <div class="card car-card" 
+             data-id="${car.id}"
              data-title="${car.title}" 
              data-specs="${car.specs}"
              data-price="${car.price}"
@@ -184,6 +215,7 @@ window.initHomePage = function () {
     btn.addEventListener("click", function () {
       // Get data from card attributes
       const carData = {
+        id: card.dataset.carId || null,
         title: card.dataset.title,
         specs: card.dataset.specs,
         price: card.dataset.price,
@@ -217,6 +249,30 @@ window.initHomePage = function () {
       document.getElementById("modalSellerPhone").textContent = carData.phone;
       document.getElementById("modalCarLocation").textContent =
         carData.location;
+
+      // Show/hide purchase button based on login status and car ID
+      const purchaseBtn = document.getElementById("purchaseCarBtn");
+      if (Utils.isLoggedIn() && carData.id) {
+        purchaseBtn.style.display = "inline-block";
+        purchaseBtn.onclick = function () {
+          if (typeof OrderService !== "undefined") {
+            OrderService.createOrder(carData.id, function () {
+              // Close modal after successful purchase
+              const modalEl = document.getElementById("carModal");
+              const modal = bootstrap.Modal.getInstance(modalEl);
+              if (modal) modal.hide();
+              // Optionally redirect to orders page
+              setTimeout(function () {
+                window.location.href = "#dashboard";
+              }, 1500);
+            });
+          } else {
+            toastr.error("Order service not available");
+          }
+        };
+      } else {
+        purchaseBtn.style.display = "none";
+      }
 
       // Show modal
       carModal.show();

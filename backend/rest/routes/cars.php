@@ -63,7 +63,7 @@ Flight::route('GET /car/@id', function($id) {
  * )
  */
 Flight::route('POST /car', function() {
-    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     $data = Flight::getRequestData();
     $created = Flight::carService()->create($data);
     // Return created resource with 201 status when DAO returns the row

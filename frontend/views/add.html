@@ -5,193 +5,82 @@
         <div class="add-car-card">
           <div class="card">
             <div class="card-body p-4">
-              <h2 class="card-title text-center mb-4">Add Your Car for Sale</h2>
+              <h2 class="card-title text-center mb-4">Sell Your Car</h2>
               <p class="text-center text-muted mb-4">
-                Fill in the details below to list your car on AutoScout.ba
+                Fill in the details below to list your car for sale
               </p>
 
               <form class="add-car-form" id="addCarForm">
                 <div class="row">
                   <!-- Car Title -->
-                  <div class="col-md-6 mb-3">
+                  <div class="col-md-12 mb-3">
                     <label for="carTitle" class="form-label">Car Title *</label>
                     <input
                       type="text"
                       class="form-control"
                       id="carTitle"
-                      name="carTitle"
+                      name="title"
                       required
-                      placeholder="e.g., BMW 3 Series, Audi A4"
+                      placeholder="e.g., BMW 3 Series 2018, Audi A4 2020"
                     />
+                  </div>
+
+                  <!-- Category -->
+                  <div class="col-md-6 mb-3">
+                    <label for="category" class="form-label">Category *</label>
+                    <select
+                      class="form-select"
+                      id="category"
+                      name="category_id"
+                      required
+                    >
+                      <option value="">Select Category</option>
+                      <option value="1">SUV</option>
+                      <option value="2">Sedan</option>
+                      <option value="3">Truck</option>
+                    </select>
                   </div>
 
                   <!-- Price -->
                   <div class="col-md-6 mb-3">
-                    <label for="price" class="form-label">Price *</label>
+                    <label for="price" class="form-label">Price ($) *</label>
                     <input
-                      type="text"
+                      type="number"
                       class="form-control"
                       id="price"
                       name="price"
                       required
-                      placeholder="e.g., €25,000"
-                    />
-                  </div>
-
-                  <!-- Year -->
-                  <div class="col-md-4 mb-3">
-                    <label for="year" class="form-label">Year *</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="year"
-                      name="year"
-                      required
-                      min="1980"
-                      max="2025"
-                      placeholder="2020"
-                    />
-                  </div>
-
-                  <!-- Mileage -->
-                  <div class="col-md-4 mb-3">
-                    <label for="mileage" class="form-label"
-                      >Mileage (km) *</label
-                    >
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="mileage"
-                      name="mileage"
-                      required
-                      placeholder="45000"
-                    />
-                  </div>
-
-                  <!-- Transmission -->
-                  <div class="col-md-4 mb-3">
-                    <label for="transmission" class="form-label"
-                      >Transmission *</label
-                    >
-                    <select
-                      class="form-select"
-                      id="transmission"
-                      name="transmission"
-                      required
-                    >
-                      <option value="">Select Transmission</option>
-                      <option value="Automatic">Automatic</option>
-                      <option value="Manual">Manual</option>
-                    </select>
-                  </div>
-
-                  <!-- Engine -->
-                  <div class="col-md-6 mb-3">
-                    <label for="engine" class="form-label">Engine *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="engine"
-                      name="engine"
-                      required
-                      placeholder="e.g., 2.0L Turbo, 1.8L TFSI"
-                    />
-                  </div>
-
-                  <!-- Fuel Type -->
-                  <div class="col-md-6 mb-3">
-                    <label for="fuel" class="form-label">Fuel Type *</label>
-                    <select class="form-select" id="fuel" name="fuel" required>
-                      <option value="">Select Fuel Type</option>
-                      <option value="Petrol">Petrol</option>
-                      <option value="Diesel">Diesel</option>
-                      <option value="Hybrid">Hybrid</option>
-                      <option value="Electric">Electric</option>
-                      <option value="LPG">LPG</option>
-                    </select>
-                  </div>
-
-                  <!-- Color -->
-                  <div class="col-md-6 mb-3">
-                    <label for="color" class="form-label">Color *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="color"
-                      name="color"
-                      required
-                      placeholder="e.g., Black, White, Silver"
-                    />
-                  </div>
-
-                  <!-- Location -->
-                  <div class="col-md-6 mb-3">
-                    <label for="location" class="form-label">Location *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="location"
-                      name="location"
-                      required
-                      placeholder="e.g., Sarajevo, Banja Luka"
-                    />
-                  </div>
-
-                  <!-- Seller Name -->
-                  <div class="col-md-6 mb-3">
-                    <label for="seller" class="form-label">Your Name *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="seller"
-                      name="seller"
-                      required
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-
-                  <!-- Phone -->
-                  <div class="col-md-6 mb-3">
-                    <label for="phone" class="form-label">Phone Number *</label>
-                    <input
-                      type="tel"
-                      class="form-control"
-                      id="phone"
-                      name="phone"
-                      required
-                      placeholder="+387 XX XXX XXX"
+                      step="0.01"
+                      min="0"
+                      placeholder="e.g., 15000"
                     />
                   </div>
 
                   <!-- Image URL -->
-                  <div class="col-12 mb-3">
-                    <label for="image" class="form-label"
-                      >Car Image URL *</label
-                    >
+                  <div class="col-md-12 mb-3">
+                    <label for="image_url" class="form-label">Image URL</label>
                     <input
                       type="url"
                       class="form-control"
-                      id="image"
-                      name="image"
-                      required
+                      id="image_url"
+                      name="image_url"
                       placeholder="https://example.com/car-image.jpg"
                     />
                     <div class="form-text">
-                      Provide a direct URL to your car's image (jpg, png, webp)
+                      Optional: Provide a direct URL to your car's image
                     </div>
                   </div>
 
                   <!-- Description -->
                   <div class="col-12 mb-4">
                     <label for="description" class="form-label"
-                      >Description *</label
+                      >Description</label
                     >
                     <textarea
                       class="form-control"
                       id="description"
                       name="description"
                       rows="4"
-                      required
                       placeholder="Describe your car's condition, features, and any additional information..."
                     ></textarea>
                   </div>
@@ -201,7 +90,7 @@
                 <div class="text-center">
                   <button type="submit" class="btn btn-primary btn-lg px-5">
                     <i class="fas fa-plus-circle"></i>
-                    Add My Car
+                    Post Car for Sale
                   </button>
                 </div>
 

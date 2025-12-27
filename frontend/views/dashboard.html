@@ -1,52 +1,24 @@
+<!-- Dashboard - All sections visible -->
 <div class="container mt-4">
   <div class="row">
-    <!-- Sidebar Navigation -->
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="text-center mb-3">
-            <div
-              class="avatar bg-primary rounded-circle d-inline-flex align-items-center justify-content-center"
-              style="width: 80px; height: 80px"
-            >
-              <span class="text-white" style="font-size: 32px">👤</span>
-            </div>
-          </div>
-          <h5 id="userFullName" class="text-center mb-3">User Name</h5>
-          <div class="list-group">
-            <a
-              href="#"
-              onclick="DashboardService.showSection('profile')"
-              class="list-group-item list-group-item-action active"
-            >
-              <i class="fas fa-user"></i> My Profile
-            </a>
-            <a
-              href="#"
-              onclick="DashboardService.showSection('listings')"
-              class="list-group-item list-group-item-action"
-            >
-              <i class="fas fa-list"></i> My Listings
-            </a>
-            <a
-              href="#"
-              onclick="DashboardService.showSection('orders')"
-              class="list-group-item list-group-item-action"
-            >
-              <i class="fas fa-shopping-cart"></i> My Orders
-            </a>
-          </div>
+    <!-- Main Content - Full Width -->
+    <div class="col-12">
+      <!-- User Profile Header -->
+      <div class="text-center mb-4">
+        <div
+          class="avatar bg-primary rounded-circle d-inline-flex align-items-center justify-content-center"
+          style="width: 80px; height: 80px"
+        >
+          <span class="text-white" style="font-size: 32px">👤</span>
         </div>
+        <h3 id="userFullName" class="mt-2">User Name</h3>
       </div>
-    </div>
 
-    <!-- Main Content -->
-    <div class="col-md-9">
       <!-- Profile Section -->
-      <div id="profile-section" class="content-section">
+      <div id="profile-section" class="content-section mb-4">
         <div class="card mb-3">
           <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Profile Information</h5>
+            <h5 class="mb-0">My Profile</h5>
           </div>
           <div class="card-body">
             <form id="profileForm">
@@ -91,15 +63,6 @@
                   name="phone"
                 />
               </div>
-              <div class="mb-3">
-                <label class="form-label">City</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="profileCity"
-                  name="city"
-                />
-              </div>
               <button type="submit" class="btn btn-primary">
                 Update Profile
               </button>
@@ -109,24 +72,36 @@
       </div>
 
       <!-- My Listings Section -->
-      <div id="listings-section" class="content-section d-none">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4>My Car Listings</h4>
-          <a href="#add" class="btn btn-primary btn-sm">Add New Car</a>
+      <div id="listings-section" class="content-section mb-4">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">My Listings</h5>
+              <a href="#add" class="btn btn-light btn-sm">Add New Car</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <table
+              id="myListingsTable"
+              class="table table-striped table-bordered w-100"
+            ></table>
+          </div>
         </div>
-        <table
-          id="myListingsTable"
-          class="table table-striped table-bordered w-100"
-        ></table>
       </div>
 
       <!-- My Orders Section -->
-      <div id="orders-section" class="content-section d-none">
-        <h4>My Orders</h4>
-        <table
-          id="myOrdersTable"
-          class="table table-striped table-bordered w-100"
-        ></table>
+      <div id="orders-section" class="content-section mb-4">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">My Orders</h5>
+          </div>
+          <div class="card-body">
+            <table
+              id="myOrdersTable"
+              class="table table-striped table-bordered w-100"
+            ></table>
+          </div>
+        </div>
       </div>
     </div>
   </div>

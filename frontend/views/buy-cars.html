@@ -1,0 +1,110 @@
+<div class="container mt-5">
+  <h1 class="mb-4">Available Cars for Purchase</h1>
+
+  <!-- Debug Info (remove in production) -->
+  <div id="debugInfo" class="alert alert-info" style="display: none">
+    <strong>Debug Info:</strong>
+    <div id="debugContent"></div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <button
+        id="refreshCarsBtn"
+        class="btn btn-success w-100"
+        onclick="BuyCarsService.loadAllCars()"
+      >
+        <i class="fas fa-sync"></i> Load Cars
+      </button>
+    </div>
+  </div>
+
+  <!-- Cars Table -->
+  <div class="row">
+    <div class="col-12">
+      <table id="buyCarsTable" class="display" style="width: 100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Car Modal -->
+  <div
+    class="modal fade"
+    id="buyCarModal"
+    tabindex="-1"
+    aria-labelledby="buyCarModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="buyCarModalTitle">Car Details</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <img id="buyCarModalImage" src="" class="img-fluid" alt="Car" />
+            </div>
+            <div class="col-md-6">
+              <h4 id="buyCarModalTitle2"></h4>
+              <p id="buyCarModalSpecs"></p>
+              <h3 id="buyCarModalPrice" class="text-warning"></h3>
+
+              <h6>Technical Specifications:</h6>
+              <div id="buyCarModalDetails"></div>
+
+              <h6 class="mt-3">Description:</h6>
+              <p id="buyCarModalDescription"></p>
+
+              <div class="alert alert-info mt-3">
+                <h6>Contact Information:</h6>
+                <p>
+                  <strong>Seller:</strong>
+                  <span id="buySeller"></span>
+                </p>
+                <p>
+                  <strong>Phone:</strong>
+                  <span id="buyPhone"></span>
+                </p>
+                <p>
+                  <strong>Location:</strong>
+                  <span id="buyLocation"></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="button" id="buyCarPurchaseBtn" class="btn btn-success">
+            <i class="fas fa-shopping-cart"></i> Purchase Car
+          </button>
+          <button type="button" class="btn btn-primary">Contact Seller</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
