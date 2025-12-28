@@ -205,16 +205,44 @@ let BuyCarsService = {
       car.title || "Car Details";
     document.getElementById("buyCarModalSpecs").textContent = car.specs || "";
     document.getElementById("buyCarModalPrice").textContent =
-      "€" + (car.price || "0");
-    document.getElementById("buyCarModalImage").src =
-      car.image || "images/default-car.jpg";
+      "$" + (car.price || "0");
+
+    // Handle car image - only show if valid URL, hide otherwise
+    const imgElement = document.getElementById("buyCarModalImage");
+    const imageUrl = car.image_url || car.image;
+
+    // Check if image URL is valid (starts with http/https or is a proper path with /)
+    const isValidUrl =
+      imageUrl &&
+      (imageUrl.startsWith("http://") ||
+        imageUrl.startsWith("https://") ||
+        imageUrl.startsWith("/") ||
+        imageUrl.startsWith("./") ||
+        imageUrl.startsWith("../"));
+
+    if (isValidUrl) {
+      imgElement.src = imageUrl;
+      imgElement.style.display = "block";
+      imgElement.onerror = function () {
+        this.style.display = "none";
+      };
+    } else {
+      imgElement.style.display = "none";
+    }
+
     document.getElementById("buyCarModalDescription").textContent =
       car.description || "No description available";
-    document.getElementById("buySeller").textContent = car.seller || "Unknown";
+    document.getElementById("buySeller").textContent =
+      car.seller_id || "Unknown";
     document.getElementById("buyPhone").textContent = car.phone || "N/A";
     document.getElementById("buyLocation").textContent = car.location || "N/A";
     document.getElementById("buyCarModalDetails").innerHTML =
-      "<p><strong>Status:</strong> " + (car.status || "Available") + "</p>";
+      "<p><strong>Category:</strong> " +
+      (car.category_id || "N/A") +
+      "</p>" +
+      "<p><strong>Status:</strong> " +
+      (car.status || "Available") +
+      "</p>";
 
     const purchaseBtn = document.getElementById("buyCarPurchaseBtn");
     const canPurchase =

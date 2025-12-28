@@ -82,8 +82,25 @@ Flight::route('POST /car', function() {
  * )
  */
 Flight::route('PUT /car/@id', function($id) {
-    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
+    // Allow both ADMIN and USER, but if USER then ensure they own the car
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     $data = Flight::getRequestData();
+
+    $user = Flight::get('user');
+    if ($user && isset($user->role) && $user->role === Roles::USER) {
+        $car = Flight::carService()->getById($id);
+        $ownerId = isset($user->user_id) ? $user->user_id : (isset($user->id) ? $user->id : null);
+        if (!$car || !$ownerId || (isset($car['seller_id']) ? $car['seller_id'] : $car['seller_id']) != $ownerId) {
+            Flight::halt(403, 'You can only edit your own listings');
+            return;
+        }
+    }
+
+    // Only allow price update for USER role to keep scope minimal
+    if ($user && isset($user->role) && $user->role === Roles::USER) {
+        $data = ['price' => $data['price']];
+    }
+
     Flight::json(Flight::carService()->update($id, $data));
 });
 

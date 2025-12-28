@@ -44,6 +44,18 @@ var DashboardService = {
       // Load user's orders
       DashboardService.loadMyOrders();
 
+      // Setup price edit form
+      const priceForm = document.getElementById("priceEditForm");
+      if (priceForm) {
+        $(priceForm).validate({
+          submitHandler: function (form) {
+            const carId = document.getElementById("editPriceCarId").value;
+            const price = document.getElementById("editPriceValue").value;
+            DashboardService.updatePrice(carId, price);
+          },
+        });
+      }
+
       console.log("DashboardService.init() completed");
     }, 300);
   },
@@ -126,9 +138,10 @@ var DashboardService = {
           {
             title: "Actions",
             data: function (row) {
+              const id = row.car_id || row.id;
               return (
-                '<button class="btn btn-sm btn-warning" onclick="CarService.openEditModal(' +
-                encodeURIComponent(JSON.stringify(row)) +
+                '<button class="btn btn-sm btn-warning" onclick="DashboardService.openPriceModal(' +
+                id +
                 ')">Edit</button>'
               );
             },
@@ -143,6 +156,53 @@ var DashboardService = {
       function (error) {
         console.error("Failed to load listings:", error);
         toastr.error("Failed to load listings");
+      }
+    );
+  },
+
+  openPriceModal: function (carId) {
+    if (!carId) {
+      toastr.error("Invalid car ID");
+      return;
+    }
+    $.blockUI({ message: "Loading car..." });
+    RestClient.get(
+      "car/" + carId,
+      function (car) {
+        $.unblockUI();
+        document.getElementById("editPriceCarId").value = car.car_id || car.id;
+        document.getElementById("editPriceValue").value = car.price || 0;
+        $("#priceEditModal").show();
+      },
+      function (error) {
+        $.unblockUI();
+        toastr.error(error.responseJSON?.message || "Failed to load car");
+      }
+    );
+  },
+
+  updatePrice: function (carId, price) {
+    if (!carId) {
+      toastr.error("Invalid car ID");
+      return;
+    }
+    if (isNaN(price)) {
+      toastr.error("Price must be a number");
+      return;
+    }
+    $.blockUI({ message: "Updating price..." });
+    RestClient.put(
+      "car/" + carId,
+      { price: Number(price) },
+      function (response) {
+        $.unblockUI();
+        $("#priceEditModal").hide();
+        toastr.success("Price updated");
+        DashboardService.loadMyListings();
+      },
+      function (error) {
+        $.unblockUI();
+        toastr.error(error.responseJSON?.message || "Update failed");
       }
     );
   },

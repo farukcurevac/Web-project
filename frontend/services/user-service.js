@@ -60,7 +60,7 @@ var UserService = {
 
   logout: function () {
     localStorage.clear();
-    window.location.replace("index.html#login");
+    window.location.replace("index.html#home");
   },
 
   generateMenuItems: function () {

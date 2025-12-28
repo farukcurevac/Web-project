@@ -12,6 +12,17 @@ var RegisterService = {
       "Password must be at least 8 characters with uppercase, lowercase, number, and special character (@$!%*?&)"
     );
 
+    // Add custom phone number validator - only digits allowed
+    $.validator.addMethod(
+      "phoneDigitsOnly",
+      function (value, element) {
+        // Only digits, no letters or special characters
+        const phoneRegex = /^[0-9]{9,20}$/;
+        return this.optional(element) || phoneRegex.test(value);
+      },
+      "Phone number must contain only digits (0-9)"
+    );
+
     // Setup form validation
     $("#register-form").validate({
       rules: {
@@ -32,8 +43,7 @@ var RegisterService = {
         },
         phone: {
           required: true,
-          minlength: 9,
-          maxlength: 20,
+          phoneDigitsOnly: true,
         },
         role: {
           required: true,
@@ -42,12 +52,6 @@ var RegisterService = {
           required: true,
           minlength: 8,
           strongPassword: true,
-        },
-        confirmPassword: {
-          required: true,
-          minlength: 8,
-          strongPassword: true,
-          equalTo: "#password",
         },
       },
       messages: {
@@ -68,8 +72,8 @@ var RegisterService = {
         },
         phone: {
           required: "Please enter your phone number",
-          minlength: "Phone number must be at least 9 digits",
-          maxlength: "Phone number must not exceed 20 characters",
+          phoneDigitsOnly:
+            "Phone number must contain only digits (0-9), between 9-20 digits",
         },
         role: {
           required: "Please select your role",
@@ -77,11 +81,6 @@ var RegisterService = {
         password: {
           required: "Please enter a password",
           minlength: "Password must be at least 8 characters",
-        },
-        confirmPassword: {
-          required: "Please confirm your password",
-          minlength: "Confirm password must be at least 8 characters",
-          equalTo: "Passwords do not match",
         },
       },
       submitHandler: function (form, event) {

@@ -146,26 +146,30 @@ window.initHomePage = function () {
     console.log("Car ID:", carData.id, "Is Logged In:", Utils.isLoggedIn());
 
     // Hide delete button (shown only from profile page)
-    deleteBtn.style.display = "none";
+    if (deleteBtn) {
+      deleteBtn.style.display = "none";
+    }
 
-    // Show purchase button only if user is logged in and car has an ID
-    if (Utils.isLoggedIn() && carData.id) {
-      purchaseBtn.style.display = "block";
-      purchaseBtn.onclick = function () {
-        if (typeof OrderService !== "undefined") {
-          OrderService.createOrder(carData.id, function () {
-            carModal.hide();
-            toastr.success(
-              "Car purchased successfully! Redirecting to your dashboard..."
-            );
-            setTimeout(function () {
-              window.location.hash = "#dashboard";
-            }, 1500);
-          });
-        }
-      };
-    } else {
-      purchaseBtn.style.display = "none";
+    // Show purchase button only if it exists and user is logged in
+    if (purchaseBtn) {
+      if (Utils.isLoggedIn() && carData.id) {
+        purchaseBtn.style.display = "block";
+        purchaseBtn.onclick = function () {
+          if (typeof OrderService !== "undefined") {
+            OrderService.createOrder(carData.id, function () {
+              carModal.hide();
+              toastr.success(
+                "Car purchased successfully! Redirecting to your dashboard..."
+              );
+              setTimeout(function () {
+                window.location.hash = "#dashboard";
+              }, 1500);
+            });
+          }
+        };
+      } else {
+        purchaseBtn.style.display = "none";
+      }
     }
 
     // Show modal
@@ -252,26 +256,28 @@ window.initHomePage = function () {
 
       // Show/hide purchase button based on login status and car ID
       const purchaseBtn = document.getElementById("purchaseCarBtn");
-      if (Utils.isLoggedIn() && carData.id) {
-        purchaseBtn.style.display = "inline-block";
-        purchaseBtn.onclick = function () {
-          if (typeof OrderService !== "undefined") {
-            OrderService.createOrder(carData.id, function () {
-              // Close modal after successful purchase
-              const modalEl = document.getElementById("carModal");
-              const modal = bootstrap.Modal.getInstance(modalEl);
-              if (modal) modal.hide();
-              // Optionally redirect to orders page
-              setTimeout(function () {
-                window.location.href = "#dashboard";
-              }, 1500);
-            });
-          } else {
-            toastr.error("Order service not available");
-          }
-        };
-      } else {
-        purchaseBtn.style.display = "none";
+      if (purchaseBtn) {
+        if (Utils.isLoggedIn() && carData.id) {
+          purchaseBtn.style.display = "inline-block";
+          purchaseBtn.onclick = function () {
+            if (typeof OrderService !== "undefined") {
+              OrderService.createOrder(carData.id, function () {
+                // Close modal after successful purchase
+                const modalEl = document.getElementById("carModal");
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                // Optionally redirect to orders page
+                setTimeout(function () {
+                  window.location.href = "#dashboard";
+                }, 1500);
+              });
+            } else {
+              toastr.error("Order service not available");
+            }
+          };
+        } else {
+          purchaseBtn.style.display = "none";
+        }
       }
 
       // Show modal

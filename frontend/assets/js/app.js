@@ -126,6 +126,7 @@ function updateNavigation() {
         <li><a href="#admin">Admin Panel</a></li>
         <li><a href="#cars">Manage Cars</a></li>
         <li><a href="#dashboard">My Profile</a></li>
+        <li><a href="#add">Sell a Car</a></li>
         <li><a href="#" onclick="UserService.logout()" class="btn-logout">Logout</a></li>
       `;
     } else if (user && user.role === Constants.USER_ROLE) {

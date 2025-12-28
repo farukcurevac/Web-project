@@ -63,9 +63,7 @@
                   name="phone"
                 />
               </div>
-              <button type="submit" class="btn btn-primary">
-                Update Profile
-              </button>
+              <!-- Update Profile button removed as requested -->
             </form>
           </div>
         </div>
@@ -85,6 +83,52 @@
               id="myListingsTable"
               class="table table-striped table-bordered w-100"
             ></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Price Modal -->
+      <div class="modal" id="priceEditModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form id="priceEditForm">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Price</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  onclick="$('#priceEditModal').hide()"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="editPriceCarId" name="car_id" />
+                <div class="mb-3">
+                  <label class="form-label">Price</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="form-control"
+                    id="editPriceValue"
+                    name="price"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  onclick="$('#priceEditModal').hide()"
+                >
+                  Close
+                </button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

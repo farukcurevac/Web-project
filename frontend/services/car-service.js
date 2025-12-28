@@ -1,7 +1,7 @@
 var CarService = {
   init: function () {
-    // Hide Add button for non-admins
-    if (!Utils.isAdmin()) {
+    // Check if user is logged in
+    if (!Utils.isLoggedIn()) {
       document.getElementById("addCarBtn")?.classList.add("d-none");
     }
 
@@ -96,12 +96,8 @@ var CarService = {
         $.unblockUI();
         if (errorCallback) {
           errorCallback(error);
-        } else {
-          CarService.closeModal();
-          const message =
-            error.responseJSON?.error?.message || "Add car failed";
-          toastr.error(message);
         }
+        // No default error message - let the caller handle it
       }
     );
   },

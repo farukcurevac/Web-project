@@ -114,9 +114,6 @@ var AdminService = {
             title: "Actions",
             data: function (row) {
               return (
-                '<button class="btn btn-sm btn-warning me-2" onclick="AdminService.editUser(' +
-                encodeURIComponent(JSON.stringify(row)) +
-                ')">Edit</button>' +
                 '<button class="btn btn-sm btn-danger" onclick="AdminService.deleteUser(' +
                 row.user_id +
                 ')">Delete</button>'
