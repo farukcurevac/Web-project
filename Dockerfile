@@ -3,6 +3,11 @@
 
 FROM php:8.2-cli
 
+# Install system tools needed during build (curl for Composer installer, unzip/git for composer dist)
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends curl unzip git \
+	&& rm -rf /var/lib/apt/lists/*
+
 # Install MySQL PDO extension
 RUN docker-php-ext-install pdo pdo_mysql
 
@@ -15,7 +20,8 @@ COPY backend /app/backend
 
 # Install backend dependencies
 WORKDIR /app/backend
-RUN composer install --no-dev --prefer-dist
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-dev --prefer-dist --no-interaction --no-progress
 
 # Ensure we are in the repo root for the run command
 WORKDIR /app
