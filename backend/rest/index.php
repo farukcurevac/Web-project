@@ -43,7 +43,8 @@ if (class_exists('Flight')) {
         if(
             strpos(Flight::request()->url, '/auth/login') === 0 ||
             strpos(Flight::request()->url, '/auth/register') === 0 ||
-            strpos(Flight::request()->url, '/docs') === 0
+            strpos(Flight::request()->url, '/docs') === 0 ||
+            strpos(Flight::request()->url, '/testme') === 0
         ) {
             return TRUE;
         } else {
@@ -55,6 +56,11 @@ if (class_exists('Flight')) {
                 Flight::halt(401, $e->getMessage());
             }
         }
+    });
+
+    // Test route that does not require authentication
+    Flight::route('GET /testme', function() {
+        Flight::json(['message' => 'Hello world ok']);
     });
 
     // Optionally set JSON response header globally
