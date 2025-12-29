@@ -2,7 +2,7 @@
 /vendor/
 
 # Optional: ignore Composer artifacts
-composer.lock
+#  composer.lock //comment out for debuging
 
 # Node modules (if any)
 node_modules/
